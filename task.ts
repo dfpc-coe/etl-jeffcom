@@ -3,28 +3,24 @@ import type { Event } from '@tak-ps/etl';
 import { Feature } from '@tak-ps/node-cot'
 import ETL, { SchemaType, handler as internal, local, DataFlowType, InvocationType } from '@tak-ps/etl';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars --  Fetch with an additional Response.typed(TypeBox Object) definition
-import { fetch } from '@tak-ps/etl';
-
-/**
- * The Input Schema contains the environment object that will be requested via the CloudTAK UI
- * It should be a valid TypeBox object - https://github.com/sinclairzx81/typebox
- */
 const InputSchema = Type.Object({
+    API_URL: Type.String({
+        description: 'The URL of the API to fetch data from'
+    }),
+    Agencies: Type.Array(Type.Object({
+        id: Type.String({ description: 'The agency ID' }),
+        name: Type.String({ description: 'The agency name' })
+    })),
     'DEBUG': Type.Boolean({
         default: false,
         description: 'Print results in logs'
     })
 });
 
-/**
- * The Output Schema contains the known properties that will be returned on the
- * GeoJSON Feature in the .properties.metdata object
- */
 const OutputSchema = Type.Object({})
 
 export default class Task extends ETL {
-    static name = 'default'
+    static name = 'etl-jeffcom'
     static flow = [ DataFlowType.Incoming ];
     static invocation = [ InvocationType.Schedule ];
 
@@ -44,14 +40,13 @@ export default class Task extends ETL {
     }
 
     async control(): Promise<void> {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Get the Environment from the Server and ensure it conforms to the schema
         const env = await this.env(InputSchema);
 
-        const features: Static<typeof Feature.InputFeature>[] = [];
+        for (const agency of env.Agencies) {
+            console.log(`Configured agency: ${agency.name} (ID: ${agency.id})`);
+        }
 
-        // Get things here and convert them to GeoJSON Feature Collections
-        // That conform to the node-cot Feature properties spec
-        // https://github.com/dfpc-coe/node-CoT/
+        const features: Static<typeof Feature.InputFeature>[] = [];
 
         const fc: Static<typeof Feature.InputFeatureCollection> = {
             type: 'FeatureCollection',

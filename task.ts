@@ -7,6 +7,9 @@ const InputSchema = Type.Object({
     API_URL: Type.String({
         description: 'The URL of the API to fetch data from'
     }),
+    API_Token: Type.String({
+        description: 'The API token for authentication'
+    }),
     Agencies: Type.Array(Type.Object({
         id: Type.String({ description: 'The agency ID' }),
         name: Type.String({ description: 'The agency name' })

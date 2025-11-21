@@ -147,6 +147,7 @@ export default class Task extends ETL {
 
             for (const incident of incidents.Incidents || []) {
                 if (incident.LocationInformation.Latitude && incident.LocationInformation.Longitude) {
+                    console.error(incident.LocationInformation);
                     const feature: Static<typeof Feature.InputFeature> = {
                         id: String(incident.IncidentId),
                         type: 'Feature',
@@ -160,13 +161,11 @@ export default class Task extends ETL {
                         geometry: {
                             type: 'Point',
                             coordinates: [
-                                incident.LocationInformation.Latitude / 1000000 * -1,
-                                incident.LocationInformation.Longitude / 1000000,
+                                incident.LocationInformation.Latitude,
+                                incident.LocationInformation.Longitude
                             ]
                         }
                     };
-
-                    console.error(incident.LocationInformation);
 
                     features.push(feature);
                 }

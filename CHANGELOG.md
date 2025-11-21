@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.2.0
+
+- :rocket: Upstream API Fixes have been implemented
+
 ### v1.1.0
 
 - :rocket: Add Incidents Data

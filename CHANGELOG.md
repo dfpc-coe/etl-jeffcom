@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.6.0
+
+- :rocket: Add Output Schema Support
+
 ### v1.5.0
 
 - :tada: Introduce Unit Support

@@ -10,9 +10,9 @@
 
 ## Version History
 
-### v1.3.2
+### v1.4.0
 
-- :bug: Correct Coordinates
+- :bug: Correct Coordinates 
 
 ### v1.3.1
 

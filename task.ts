@@ -152,7 +152,6 @@ export default class Task extends ETL {
                         id: String(incident.IncidentId),
                         type: 'Feature',
                         properties: {
-                            id: incident.IncidentId.toString(),
                             type: 'a-f-G',
                             how: 'm-g',
                             callsign: incident.IncidentType.Incident_Type || 'Unknown Incident',

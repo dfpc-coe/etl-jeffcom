@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.3.1
+
+- :bug: TS Updates
+
 ### v1.3.0
 
 - :bug: Schema Updates

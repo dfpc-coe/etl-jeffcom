@@ -87,7 +87,7 @@ export default class Task extends ETL {
                         IncidentType: Type.Object({
                             Incident_Type: Type.Union([Type.Null(), Type.String()]),
                             Problem: Type.Union([Type.Null(), Type.String()]),
-                            Priority: Type.Union([Type.Null(), Type.String()]),
+                            Priority: Type.Union([Type.Null(), Type.Number()]),
                             PriorityDescription: Type.Union([Type.Null(), Type.String()]),
                             Response_Plan: Type.Union([Type.Null(), Type.String()]),
                             Determinant: Type.Union([Type.Null(), Type.String()]),
@@ -95,9 +95,9 @@ export default class Task extends ETL {
                         IncidentHierarchy: Type.Object({
                             Agency_Type: Type.String(),
                             Jurisdiction: Type.String(),
-                            Division: Type.String(),
-                            Battalion: Type.String(),
-                            Response_Area: Type.String()
+                            Division: Type.Union([Type.Null(), Type.String()]),
+                            Battalion: Type.Union([Type.Null(), Type.String()]),
+                            Response_Area: Type.Union([Type.Null(), Type.String()])
                         }),
                         CallerInformation: Type.Object({
                             Caller_Name: Type.Union([Type.Null(), Type.String()]),

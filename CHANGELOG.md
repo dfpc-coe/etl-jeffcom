@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.3.0
+
+- :bug: Schema Updates
+
 ### v1.2.0
 
 - :rocket: Upstream API Fixes have been implemented

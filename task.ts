@@ -160,8 +160,8 @@ export default class Task extends ETL {
                         geometry: {
                             type: 'Point',
                             coordinates: [
+                                incident.LocationInformation.Longitude,
                                 incident.LocationInformation.Latitude,
-                                incident.LocationInformation.Longitude
                             ]
                         }
                     };

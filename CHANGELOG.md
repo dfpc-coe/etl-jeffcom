@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.3.2
+
+- :bug: Correct Coordinates
+
 ### v1.3.1
 
 - :bug: TS Updates

@@ -181,7 +181,51 @@ export default class Task extends ETL {
                 })
             });
 
-            console.error(await res.json());
+            const units = await res.typed(Type.Object({
+                Success: Type.Boolean(),
+                Error: Type.Optional(Type.String()),
+                Units: Type.Array(Type.Object({
+                    UnitName: Type.String(),
+                    UnitID: Type.Number(),
+                    VehicleName: Type.String(),
+                    VehicleID: Type.Number(),
+                    StatusName: Type.String(),
+                    Latitude: Type.Number(),
+                    Longitude: Type.Number(),
+                    IncidentID: Type.Number(),
+                    Agency: Type.String(),
+                    Jurisdiction: Type.String(),
+                    JurisdictionCode: Type.String(),
+                    CurrentLocation: Type.String(),
+                    Speed: Type.Union([Type.Null(), Type.Number()]),
+                    DestinationLatitude: Type.Union([Type.Null(), Type.Number()]),
+                    DestinationLongitude: Type.Union([Type.Null(), Type.Number()]),
+                    Heading: Type.Union([Type.Null(), Type.String()]),
+                    Personel: Type.Array(Type.String())
+                }))
+            }));
+
+            for (const unit of units.Units) {
+                const feature: Static<typeof Feature.InputFeature> = {
+                    id: String(unit.UnitID),
+                    type: 'Feature',
+                    properties: {
+                        type: 'a-f-G',
+                        how: 'm-g',
+                        callsign: unit.UnitName,
+                        remarks: unit.StatusName
+                    },
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [
+                            unit.Longitude,
+                            unit.Latitude,
+                        ]
+                    }
+                };
+
+                features.push(feature);
+            }
         } else {
             throw new Error(`Unsupported DataType: ${env.DataType}`);
         }

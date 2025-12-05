@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.5.0
+
+- :tada: Introduce Unit Support
+
 ### v1.4.0
 
 - :bug: Correct Coordinates 

@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.7.0
+
+- :rocket: Procedural Requests
+
 ### v1.6.0
 
 - :rocket: Add Output Schema Support

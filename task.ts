@@ -137,106 +137,116 @@ export default class Task extends ETL {
     async control(): Promise<void> {
         const env = await this.env(InputSchema);
 
+        const errors: Error[] = [];
         const features: Static<typeof Feature.InputFeature>[] = [];
 
-        const JurisdictionCodes = env.Agencies
-            .map(agency => agency.id)
-            .filter(id => id && id.length > 0);
-
         if (env.DataType === 'incidents') {
-            const res = await fetch(`${env.API_URL}/v1/GetActiveIncidentsByJurisdiction`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': env.API_Token,
-                },
-                body: JSON.stringify({
-                    JurisdictionCodes
-                })
-            });
-
-            if (!res.ok) {
-                console.error('Error fetching incidents:', await res.text());
-                throw new Error(`Failed to fetch incidents: ${res.status} ${res.statusText}`);
-            }
-
-            const incidents = await res.typed(Type.Object({
-                Success: Type.Boolean(),
-                Error: Type.Optional(Type.String()),
-                Incidents: Type.Union([
-                    Type.Null(),
-                    Type.Array(OutputIncident)
-                ])
-            }), {
-                verbose: true //env.DEBUG
-            })
-
-            if (!incidents.Success) {
-                throw new Error(`API Error: ${incidents.Error}`);
-            }
-
-            for (const incident of incidents.Incidents || []) {
-                if (incident.LocationInformation.Latitude && incident.LocationInformation.Longitude) {
-                    console.error(incident.LocationInformation);
-                    const feature: Static<typeof Feature.InputFeature> = {
-                        id: String(incident.IncidentId),
-                        type: 'Feature',
-                        properties: {
-                            type: 'a-f-G',
-                            how: 'm-g',
-                            callsign: incident.IncidentType.Incident_Type || 'Unknown Incident',
-                            remarks: ''
+            for (const agency of env.Agencies) {
+                try {
+                    const res = await fetch(`${env.API_URL}/v1/GetActiveIncidentsByJurisdiction`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-api-key': env.API_Token,
                         },
-                        geometry: {
-                            type: 'Point',
-                            coordinates: [
-                                incident.LocationInformation.Longitude,
-                                incident.LocationInformation.Latitude,
-                            ]
-                        }
-                    };
+                        body: JSON.stringify({
+                            JurisdictionCodes: [ agency.id]
+                        })
+                    });
 
-                    features.push(feature);
+                    if (!res.ok) {
+                        throw new Error(`Failed to fetch incidents: ${res.status} ${res.statusText}`);
+                    }
+
+                    const incidents = await res.typed(Type.Object({
+                        Success: Type.Boolean(),
+                        Error: Type.Optional(Type.String()),
+                        Incidents: Type.Union([
+                            Type.Null(),
+                            Type.Array(OutputIncident)
+                        ])
+                    }), {
+                        verbose: env.DEBUG
+                    })
+
+                    if (!incidents.Success) {
+                        errors.push(new Error(`API Error for agency ${agency.name} (${agency.id}): ${incidents.Error || 'Unknown error'}`));
+                    }
+
+                    for (const incident of incidents.Incidents || []) {
+                        if (incident.LocationInformation.Latitude && incident.LocationInformation.Longitude) {
+                            console.error(incident.LocationInformation);
+                            const feature: Static<typeof Feature.InputFeature> = {
+                                id: String(incident.IncidentId),
+                                type: 'Feature',
+                                properties: {
+                                    type: 'a-f-G',
+                                    how: 'm-g',
+                                    callsign: incident.IncidentType.Incident_Type || 'Unknown Incident',
+                                    remarks: ''
+                                },
+                                geometry: {
+                                    type: 'Point',
+                                    coordinates: [
+                                        incident.LocationInformation.Longitude,
+                                        incident.LocationInformation.Latitude,
+                                    ]
+                                }
+                            };
+
+                            features.push(feature);
+                        }
+                    }
+                } catch (err) {
+                    errors.push(new Error(`Error processing agency ${agency.name} (${agency.id}): ${(err as Error).message}`));
                 }
             }
         } else if (env.DataType === 'units') {
-            const res = await fetch(`${env.API_URL}/v1/GetActiveUnitsByJurisdiction`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': env.API_Token,
-                },
-                body: JSON.stringify({
-                    JurisdictionCodes
-                })
-            });
+            for (const agency of env.Agencies) {
+                try {
+                    const res = await fetch(`${env.API_URL}/v1/GetActiveUnitsByJurisdiction`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-api-key': env.API_Token,
+                        },
+                        body: JSON.stringify({
+                            JurisdictionCodes: [ agency.id ]
+                        })
+                    });
 
-            const units = await res.typed(Type.Object({
-                Success: Type.Boolean(),
-                Error: Type.Optional(Type.String()),
-                Units: Type.Array(OutputUnit)
-            }));
+                    const units = await res.typed(Type.Object({
+                        Success: Type.Boolean(),
+                        Error: Type.Optional(Type.String()),
+                        Units: Type.Array(OutputUnit)
+                    }), {
+                        verbose: env.DEBUG
+                    })
 
-            for (const unit of units.Units) {
-                const feature: Static<typeof Feature.InputFeature> = {
-                    id: String(unit.UnitID),
-                    type: 'Feature',
-                    properties: {
-                        type: 'a-f-G',
-                        how: 'm-g',
-                        callsign: unit.UnitName,
-                        remarks: unit.StatusName
-                    },
-                    geometry: {
-                        type: 'Point',
-                        coordinates: [
-                            unit.Longitude,
-                            unit.Latitude,
-                        ]
+                    for (const unit of units.Units) {
+                        const feature: Static<typeof Feature.InputFeature> = {
+                            id: String(unit.UnitID),
+                            type: 'Feature',
+                            properties: {
+                                type: 'a-f-G',
+                                how: 'm-g',
+                                callsign: unit.UnitName,
+                                remarks: unit.StatusName
+                            },
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [
+                                    unit.Longitude,
+                                    unit.Latitude,
+                                ]
+                            }
+                        };
+
+                        features.push(feature);
                     }
-                };
-
-                features.push(feature);
+                } catch (err) {
+                    errors.push(new Error(`Error processing agency ${agency.name} (${agency.id}): ${(err as Error).message}`));
+                }
             }
         } else {
             throw new Error(`Unsupported DataType: ${env.DataType}`);
@@ -249,6 +259,10 @@ export default class Task extends ETL {
         }
 
         await this.submit(fc);
+
+        if (errors.length > 0) {
+            throw new Error(`Encountered ${errors.length} errors:\n` + errors.map(e => e.message).join('\n'));
+        }
     }
 }
 

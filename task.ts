@@ -166,10 +166,11 @@ export default class Task extends ETL {
                             Type.Array(OutputIncident)
                         ])
                     }), {
-                        verbose: env.DEBUG
+                        verbose: env.DEBUG || !!process.env.DEBUG
                     })
 
                     if (!incidents.Success) {
+                        console.error('Error', incidents);
                         errors.push(new Error(`API Error for agency ${agency.name} (${agency.id}): ${incidents.Error || 'Unknown error'}`));
                     }
 
@@ -198,7 +199,7 @@ export default class Task extends ETL {
                         }
                     }
                 } catch (err) {
-                    errors.push(new Error(`Error processing agency ${agency.name} (${agency.id}): ${(err as Error).message}`));
+                    errors.push(new Error(`Error processing Incident: ${agency.name} (${agency.id}): ${(err as Error).message}`));
                 }
             }
         } else if (env.DataType === 'units') {
@@ -220,8 +221,13 @@ export default class Task extends ETL {
                         Error: Type.Optional(Type.String()),
                         Units: Type.Array(OutputUnit)
                     }), {
-                        verbose: env.DEBUG
+                        verbose: env.DEBUG || !!process.env.DEBUG
                     })
+
+                    if (!units.Success) {
+                        console.error('Error', units);
+                        errors.push(new Error(`API Error for agency ${agency.name} (${agency.id}): ${units.Error || 'Unknown error'}`));
+                    }
 
                     for (const unit of units.Units) {
                         const feature: Static<typeof Feature.InputFeature> = {
@@ -245,7 +251,7 @@ export default class Task extends ETL {
                         features.push(feature);
                     }
                 } catch (err) {
-                    errors.push(new Error(`Error processing agency ${agency.name} (${agency.id}): ${(err as Error).message}`));
+                    errors.push(new Error(`Error processing Unit: ${agency.name} (${agency.id}): ${(err as Error).message}`));
                 }
             }
         } else {

@@ -117,8 +117,6 @@ export default class Task extends ETL {
             if (type === SchemaType.Input) {
                 return InputSchema;
             } else {
-                const task = new Task();
-
                 const env = await this.env(InputSchema);
 
                 if (env.DataType === 'incidents') {

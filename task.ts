@@ -174,7 +174,6 @@ export default class Task extends ETL {
 
                     for (const incident of incidents.Incidents || []) {
                         if (incident.LocationInformation.Latitude && incident.LocationInformation.Longitude) {
-                            console.error(incident.LocationInformation);
                             const feature: Static<typeof Feature.InputFeature> = {
                                 id: String(incident.IncidentId),
                                 type: 'Feature',
@@ -217,7 +216,7 @@ export default class Task extends ETL {
                     const units = await res.typed(Type.Object({
                         Success: Type.Boolean(),
                         Error: Type.Optional(Type.String()),
-                        Units: Type.Array(OutputUnit)
+                        Units: Type.Union([Type.Null(), Type.Array(OutputUnit)])
                     }), {
                         verbose: env.DEBUG || !!process.env.DEBUG
                     })
@@ -225,6 +224,10 @@ export default class Task extends ETL {
                     if (!units.Success) {
                         console.error('Error', units);
                         errors.push(new Error(`API Error for agency ${agency.name} (${agency.id}): ${units.Error || 'Unknown error'}`));
+                    }
+
+                    if (units.Units === null) {
+                        continue;
                     }
 
                     for (const unit of units.Units) {

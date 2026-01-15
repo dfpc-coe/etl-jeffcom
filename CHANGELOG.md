@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.7.1
+
+- :rocket: Allow Null Unit Values
+
 ### v1.7.0
 
 - :rocket: Procedural Requests

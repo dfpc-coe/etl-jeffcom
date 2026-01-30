@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.8.0
+
+- :rocket: Move to webhook approach
+
 ### v1.7.1
 
 - :rocket: Allow Null Unit Values

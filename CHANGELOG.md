@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.8.1
+
+- :rocket: Update Dependencies
+
 ### v1.8.0
 
 - :rocket: Move to webhook approach

@@ -21,6 +21,6 @@
     "dependencies": {
         "@openaddresses/batch-schema": "^10.21.0",
         "@sinclair/typebox": "^0.34.0",
-        "@tak-ps/etl": "^9.0.0"
+        "@tak-ps/etl": "^10.0.0"
     }
 }

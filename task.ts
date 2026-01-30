@@ -137,7 +137,7 @@ export default class Task extends ETL {
         schema.post('/:webhookid', {
             name: 'Incoming Webhook',
             group: 'Default',
-            description: 'Get an Everywhere Hub InReach Update',
+            description: 'JeffCom Data Event',
             params: Type.Object({
                 webhookid: Type.String()
             }),

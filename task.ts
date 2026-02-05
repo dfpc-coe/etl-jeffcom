@@ -147,6 +147,13 @@ export default class Task extends ETL {
                 message: Type.String()
             })
         }, async (req: any, res: any) => {
+            if (!req.headers.authorization || req.headers.authorization.split(' ')[1] !== env.APIKey) {
+                return res.status(401).json({
+                    status: 401,
+                    message: 'Unauthorized'
+                });
+            }
+
             if (env.DEBUG) {
                 console.error(`DEBUG Webhook: ${req.params.webhookid} - ${JSON.stringify(req.body, null, 4)}`);
             }

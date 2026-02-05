@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.8.2
+
+- :rocket: Strong validation of the API Key
+
 ### v1.8.1
 
 - :rocket: Update Dependencies

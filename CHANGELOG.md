@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.9.0
+
+- :rocket: Wire up submission
+
 ### v1.8.2
 
 - :rocket: Strong validation of the API Key

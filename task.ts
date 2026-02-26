@@ -158,6 +158,105 @@ export default class Task extends ETL {
                 console.error(`DEBUG Webhook: ${req.params.webhookid} - ${JSON.stringify(req.body, null, 4)}`);
             }
 
+            const fc: Static<typeof Feature.InputFeatureCollection> = {
+                type: 'FeatureCollection',
+                features: []
+            };
+
+            if (env.DataType === 'units') {
+                const unit = req.body as Static<typeof OutputUnit>;
+
+                if (unit.Latitude != null && unit.Longitude != null) {
+                    const remarks = [
+                        unit.StatusName ? `Status: ${unit.StatusName}` : null,
+                        unit.Agency ? `Agency: ${unit.Agency}` : null,
+                        unit.Jurisdiction ? `Jurisdiction: ${unit.Jurisdiction}` : null,
+                        unit.CurrentLocation ? `Location: ${unit.CurrentLocation}` : null,
+                        unit.IncidentID ? `Incident ID: ${unit.IncidentID}` : null,
+                        unit.Personel?.length ? `Personnel: ${unit.Personel.join(', ')}` : null
+                    ].filter(Boolean).join('\n');
+
+                    fc.features.push({
+                        id: `unit-${unit.UnitID}`,
+                        type: 'Feature',
+                        properties: {
+                            callsign: unit.UnitName || unit.VehicleName,
+                            type: 'a-f-G-E-V',
+                            how: 'm-g',
+                            time: new Date().toISOString(),
+                            start: new Date().toISOString(),
+                            stale: 600,
+                            remarks: remarks || undefined,
+                            track: (unit.Speed != null || unit.Heading != null) ? {
+                                speed: unit.Speed != null ? String(unit.Speed) : undefined,
+                                course: unit.Heading != null ? String(unit.Heading) : undefined
+                            } : undefined,
+                            metadata: { original: unit }
+                        },
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [unit.Longitude, unit.Latitude]
+                        }
+                    });
+                }
+            } else if (env.DataType === 'incidents') {
+                const incident = req.body as Static<typeof OutputIncident>;
+
+                const lat = incident.LocationInformation?.Latitude;
+                const lon = incident.LocationInformation?.Longitude;
+
+                if (lat != null && lon != null) {
+                    const address = [
+                        incident.LocationInformation.Address,
+                        incident.LocationInformation.Apartment,
+                        incident.LocationInformation.City
+                    ].filter(Boolean).join(', ');
+
+                    const remarks = [
+                        address ? `Address: ${address}` : null,
+                        incident.LocationInformation.Location_Name ? `Location: ${incident.LocationInformation.Location_Name}` : null,
+                        incident.LocationInformation.Cross_Street ? `Cross Street: ${incident.LocationInformation.Cross_Street}` : null,
+                        incident.IncidentType?.Incident_Type ? `Type: ${incident.IncidentType.Incident_Type}` : null,
+                        incident.IncidentType?.Problem ? `Problem: ${incident.IncidentType.Problem}` : null,
+                        incident.IncidentType?.PriorityDescription ? `Priority: ${incident.IncidentType.PriorityDescription}` : null,
+                        incident.IncidentType?.Determinant ? `Determinant: ${incident.IncidentType.Determinant}` : null,
+                        incident.IncidentHierarchy?.Agency_Type ? `Agency: ${incident.IncidentHierarchy.Agency_Type}` : null,
+                        incident.IncidentHierarchy?.Division ? `Division: ${incident.IncidentHierarchy.Division}` : null,
+                        incident.IncidentHierarchy?.Battalion ? `Battalion: ${incident.IncidentHierarchy.Battalion}` : null,
+                        incident.CallerInformation?.Caller_Name ? `Caller: ${incident.CallerInformation.Caller_Name}` : null,
+                        incident.CallerInformation?.Call_Back_Phone ? `Phone: ${incident.CallerInformation.Call_Back_Phone}` : null,
+                        incident.Call_Disposition ? `Disposition: ${incident.Call_Disposition}` : null,
+                        incident.WhichQueue ? `Queue: ${incident.WhichQueue}` : null,
+                        incident.Master_Incident_Number ? `Master Incident: ${incident.Master_Incident_Number}` : null
+                    ].filter(Boolean).join('\n');
+
+                    fc.features.push({
+                        id: `incident-${incident.IncidentId}`,
+                        type: 'Feature',
+                        properties: {
+                            callsign: incident.IncidentType?.Problem
+                                || incident.IncidentType?.Incident_Type
+                                || incident.ShortcutId
+                                || incident.Master_Incident_Number
+                                || `Incident ${incident.IncidentId}`,
+                            type: 'a-f-G-U-i',
+                            how: 'h-g-i-g-o',
+                            time: incident.Response_Date || new Date().toISOString(),
+                            start: incident.Response_Date || new Date().toISOString(),
+                            stale: 3600,
+                            remarks: remarks || undefined,
+                            metadata: { original: incident }
+                        },
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [lon, lat]
+                        }
+                    });
+                }
+            }
+
+            await task.submit(fc);
+
             res.json({
                 status: 200,
                 message: 'Received'

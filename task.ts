@@ -215,7 +215,7 @@ export default class Task extends ETL {
                                 speed: unit.Speed != null ? String(unit.Speed) : undefined,
                                 course: unit.Heading != null ? String(unit.Heading) : undefined
                             } : undefined,
-                            metadata: { original: unit }
+                            metadata: unit
                         },
                         geometry: {
                             type: 'Point',
@@ -269,7 +269,7 @@ export default class Task extends ETL {
                             start: incident.Response_Date || new Date().toISOString(),
                             stale: 3600,
                             remarks: remarks || undefined,
-                            metadata: { original: incident }
+                            metadata: incident
                         },
                         geometry: {
                             type: 'Point',

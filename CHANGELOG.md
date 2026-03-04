@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.12.2
+
+- :rocket: Update Metadata Location
+
 ### v1.12.1
 
 - :rocket: Don't archive resubmitted features

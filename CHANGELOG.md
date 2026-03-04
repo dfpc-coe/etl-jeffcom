@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.11.0
+
+- :rocket: Add ability to rebroadcast data from ConnectionFeature store
+
 ### v1.10.0
 
 - :rocket: Fix metadata location
@@ -48,7 +52,7 @@
 
 ### v1.4.0
 
-- :bug: Correct Coordinates 
+- :bug: Correct Coordinates
 
 ### v1.3.1
 

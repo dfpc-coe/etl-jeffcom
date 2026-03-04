@@ -15,6 +15,10 @@ const InputSchema = Type.Object({
     APIKey: Type.String({
         description: 'API Key for webhook permissions'
     }),
+    RebroadcastTimeout: Type.Number({
+        default: 60,
+        description: 'Number of minutes for which features should be rebroadcast'
+    }),
     'DEBUG': Type.Boolean({
         default: false,
         description: 'Print results in logs'
@@ -191,7 +195,7 @@ export default class Task extends ETL {
                                 speed: unit.Speed != null ? String(unit.Speed) : undefined,
                                 course: unit.Heading != null ? String(unit.Heading) : undefined
                             } : undefined,
-                            metadata: unit
+                            metadata: { original: unit }
                         },
                         geometry: {
                             type: 'Point',
@@ -245,7 +249,7 @@ export default class Task extends ETL {
                             start: incident.Response_Date || new Date().toISOString(),
                             stale: 3600,
                             remarks: remarks || undefined,
-                            metadata: incident
+                            metadata: { original: incident }
                         },
                         geometry: {
                             type: 'Point',
@@ -265,9 +269,44 @@ export default class Task extends ETL {
     }
 
     async control(): Promise<void> {
+        const env = await this.env(InputSchema);
+        const layer = await this.fetchLayer();
+
         const fc: Static<typeof Feature.InputFeatureCollection> = {
             type: 'FeatureCollection',
             features: []
+        };
+
+        const cutoff = new Date(Date.now() - env.RebroadcastTimeout * 60 * 1000);
+
+        const limit = 100;
+        let page = 0;
+        let total = Infinity;
+
+        while (fc.features.length < total) {
+            const url = new URL(`/api/connection/${layer.connection}/feature`, this.etl.api);
+            url.searchParams.set('layer', String(layer.id));
+            url.searchParams.set('format', 'geojson');
+            url.searchParams.set('download', 'false');
+            url.searchParams.set('limit', String(limit));
+            url.searchParams.set('page', String(page));
+            url.searchParams.set('sort', 'id');
+            url.searchParams.set('order', 'asc');
+            url.searchParams.set('filter', '');
+
+            const res = await this.fetch(url) as { total: number; items: Static<typeof Feature.InputFeatureCollection>['features'] };
+
+            total = res.total;
+
+            for (const feat of res.items) {
+                const time = feat.properties?.start ? new Date(feat.properties.start as string) : null;
+                if (!time || time >= cutoff) {
+                    fc.features.push(feat);
+                }
+            }
+
+            if (res.items.length < limit) break;
+            page++;
         }
 
         await this.submit(fc);

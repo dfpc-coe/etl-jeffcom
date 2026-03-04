@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.12.1
+
+- :rocket: Don't archive resubmitted features
+
 ### v1.12.0
 
 - :rocket: Add additional optional fields

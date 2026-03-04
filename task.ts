@@ -170,7 +170,7 @@ export default class Task extends ETL {
                 status: Type.Number(),
                 message: Type.String()
             })
-        }, async (req: any, res: any) => {
+        }, async (req, res) => {
             if (!req.headers.authorization || req.headers.authorization.split(' ')[1] !== env.APIKey) {
                 return res.status(401).json({
                     status: 401,
@@ -329,7 +329,9 @@ export default class Task extends ETL {
             page++;
         }
 
-        await this.submit(fc);
+        await this.submit(fc, {
+            archive: false
+        });
     }
 }
 

@@ -2,7 +2,7 @@
     "name": "coe-etl-jeffcom",
     "type": "module",
     "prviate": true,
-    "version": "1.12.0",
+    "version": "1.12.1",
     "description": "",
     "main": "task.ts",
     "scripts": {

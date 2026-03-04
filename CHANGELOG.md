@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.12.0
+
+- :rocket: Add additional optional fields
+
 ### v1.11.0
 
 - :rocket: Add ability to rebroadcast data from ConnectionFeature store

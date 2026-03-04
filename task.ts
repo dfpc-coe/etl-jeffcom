@@ -47,7 +47,7 @@ const OutputUnit = Type.Object({
 
 const OutputIncident = Type.Object({
     IncidentId: Type.Number(),
-    ShortcutId: Type.Union([Type.Null(), Type.String()]),
+    ShortcutId: Type.Union([Type.Null(), Type.Number()]),
     Master_Incident_Number: Type.Union([Type.Null(), Type.String()]),
     CaseNumbers: Type.Array(Type.String()),
     Response_Date: Type.String(),
@@ -101,7 +101,27 @@ const OutputIncident = Type.Object({
     Call_Is_Active: Type.Boolean(),
     RequestToCancel: Type.Boolean(),
     Stacked: Type.Boolean(),
-    Reopened: Type.Boolean()
+    Reopened: Type.Boolean(),
+    FirstThreeComments: Type.Optional(Type.Array(Type.String())),
+    PagingNeeded: Type.Optional(Type.String()),
+    Units: Type.Optional(Type.Array(Type.Object({
+        UnitName: Type.String(),
+        UnitID: Type.Number(),
+        VehicleName: Type.String(),
+        VehicleID: Type.Number(),
+        StatusName: Type.String(),
+        Latitude: Type.Number(),
+        Longitude: Type.Number(),
+        IncidentID: Type.Number(),
+        Agency: Type.String(),
+        Jurisdiction: Type.String(),
+        CurrentLocation: Type.String(),
+        Speed: Type.Union([Type.Null(), Type.Number()]),
+        DestinationLatitude: Type.Union([Type.Null(), Type.Number()]),
+        DestinationLongitude: Type.Union([Type.Null(), Type.Number()]),
+        Heading: Type.Union([Type.Null(), Type.String()]),
+        CADIncident: Type.Union([Type.Null(), Type.String()])
+    })))
 })
 
 export default class Task extends ETL {
@@ -240,7 +260,7 @@ export default class Task extends ETL {
                         properties: {
                             callsign: incident.IncidentType?.Problem
                                 || incident.IncidentType?.Incident_Type
-                                || incident.ShortcutId
+                                || (incident.ShortcutId != null ? String(incident.ShortcutId) : null)
                                 || incident.Master_Incident_Number
                                 || `Incident ${incident.IncidentId}`,
                             type: 'a-f-G-U-i',

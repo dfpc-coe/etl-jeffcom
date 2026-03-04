@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.10.0
+
+- :rocket: Fix metadata location
+
 ### v1.9.0
 
 - :rocket: Wire up submission

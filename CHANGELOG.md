@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.13.0
+
+- :bug: Explicitly set archived = false
+
 ### v1.12.2
 
 - :rocket: Update Metadata Location

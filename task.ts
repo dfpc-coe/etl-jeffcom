@@ -321,6 +321,7 @@ export default class Task extends ETL {
             for (const feat of res.items) {
                 const time = feat.properties?.start ? new Date(feat.properties.start as string) : null;
                 if (!time || time >= cutoff) {
+                    feat.properties.archived = false;
                     fc.features.push(feat);
                 }
             }

@@ -200,6 +200,8 @@ export default class Task extends ETL {
                         unit.Personel?.length ? `Personnel: ${unit.Personel.join(', ')}` : null
                     ].filter(Boolean).join('\n');
 
+                    const now = new Date();
+
                     fc.features.push({
                         id: `unit-${unit.UnitID}`,
                         type: 'Feature',
@@ -207,9 +209,9 @@ export default class Task extends ETL {
                             callsign: unit.UnitName || unit.VehicleName,
                             type: 'a-f-G-E-V',
                             how: 'm-g',
-                            time: new Date().toISOString(),
-                            start: new Date().toISOString(),
-                            stale: 600,
+                            time: now.toISOString(),
+                            start: now.toISOString(),
+                            stale: new Date(now.getTime() + 20 * 60 * 1000).toISOString(),
                             remarks: remarks || undefined,
                             track: (unit.Speed != null || unit.Heading != null) ? {
                                 speed: unit.Speed != null ? String(unit.Speed) : undefined,
@@ -254,6 +256,8 @@ export default class Task extends ETL {
                         incident.Master_Incident_Number ? `Master Incident: ${incident.Master_Incident_Number}` : null
                     ].filter(Boolean).join('\n');
 
+                    const start = new Date(incident.Response_Date || Date.now());
+
                     fc.features.push({
                         id: `incident-${incident.IncidentId}`,
                         type: 'Feature',
@@ -265,9 +269,9 @@ export default class Task extends ETL {
                                 || `Incident ${incident.IncidentId}`,
                             type: 'a-f-G-U-i',
                             how: 'h-g-i-g-o',
-                            time: incident.Response_Date || new Date().toISOString(),
-                            start: incident.Response_Date || new Date().toISOString(),
-                            stale: 3600,
+                            time: start.toISOString(),
+                            start: start.toISOString(),
+                            stale: new Date(start.getTime() + 20 * 60 * 1000).toISOString(),
                             remarks: remarks || undefined,
                             metadata: incident
                         },

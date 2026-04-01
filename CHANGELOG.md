@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.14.0
+
+- :bug: Explicitly set start/stale values
+
 ### v1.13.0
 
 - :bug: Explicitly set archived = false

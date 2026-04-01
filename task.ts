@@ -256,6 +256,7 @@ export default class Task extends ETL {
                         incident.Master_Incident_Number ? `Master Incident: ${incident.Master_Incident_Number}` : null
                     ].filter(Boolean).join('\n');
 
+                    const now = new Date();
                     const start = new Date(incident.Response_Date || Date.now());
 
                     fc.features.push({
@@ -271,7 +272,7 @@ export default class Task extends ETL {
                             how: 'h-g-i-g-o',
                             time: start.toISOString(),
                             start: start.toISOString(),
-                            stale: new Date(start.getTime() + 20 * 60 * 1000).toISOString(),
+                            stale: new Date(now.getTime() + 20 * 60 * 1000).toISOString(),
                             remarks: remarks || undefined,
                             metadata: incident
                         },

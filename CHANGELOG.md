@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.14.1
+
+- :bug: Caclculate stale from receipt time
+
 ### v1.14.0
 
 - :bug: Explicitly set start/stale values

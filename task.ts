@@ -15,10 +15,6 @@ const InputSchema = Type.Object({
     APIKey: Type.String({
         description: 'API Key for webhook permissions'
     }),
-    RebroadcastTimeout: Type.Number({
-        default: 60,
-        description: 'Number of minutes for which features should be rebroadcast'
-    }),
     'DEBUG': Type.Boolean({
         default: false,
         description: 'Print results in logs'
@@ -296,13 +292,12 @@ export default class Task extends ETL {
     async control(): Promise<void> {
         const env = await this.env(InputSchema);
         const layer = await this.fetchLayer();
+        const now = new Date();
 
         const fc: Static<typeof Feature.InputFeatureCollection> = {
             type: 'FeatureCollection',
             features: []
         };
-
-        const cutoff = new Date(Date.now() - env.RebroadcastTimeout * 60 * 1000);
 
         const limit = 100;
         let page = 0;
@@ -324,11 +319,11 @@ export default class Task extends ETL {
             total = res.total;
 
             for (const feat of res.items) {
-                const time = feat.properties?.start ? new Date(feat.properties.start as string) : null;
-                if (!time || time >= cutoff) {
-                    feat.properties.archived = false;
-                    fc.features.push(feat);
-                }
+                const stale = feat.properties?.stale ? new Date(feat.properties.stale as string) : null;
+                if (stale && !Number.isNaN(stale.getTime()) && stale < now) continue;
+
+                feat.properties.archived = false;
+                fc.features.push(feat);
             }
 
             if (res.items.length < limit) break;

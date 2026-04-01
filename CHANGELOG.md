@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.14.2
+
+- :bug: pre-parse stale time
+
 ### v1.14.1
 
 - :bug: Caclculate stale from receipt time

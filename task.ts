@@ -290,7 +290,6 @@ export default class Task extends ETL {
     }
 
     async control(): Promise<void> {
-        const env = await this.env(InputSchema);
         const layer = await this.fetchLayer();
         const now = new Date();
 

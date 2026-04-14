@@ -10,6 +10,10 @@
 
 ## Version History
 
+### v1.15.0
+
+- :rocket: Update Core Dependencies
+
 ### v1.14.2
 
 - :bug: pre-parse stale time
